@@ -57,7 +57,12 @@
         __filtered_db2_group_out: "{{ (zos_db2_discovery_out_group.results | selectattr('item.owner', 'eq', item.owner))[0].content | default([]) | parse_group }}"
         __tmp_dict: "{{ {'system': item.system, 'prefix': item.prefix, 'owner': item.owner, 'subsystem': item.owner[:4]} | ansible.builtin.combine(__filtered_db2_ddf_out.content, __filtered_db2_group_out.content) }}"
 
-    - debug:
+    - name: Display discovered list of Db2 for z/OS subsystems and its information.
+      ansible.builtin.debug:
         var: zos_db2_discovery_db2_information
-
   when: zos_db2_discovery_db2_prefixes | length > 0
+
+- name: Display message when no Db2 for z/OS subsystems were identified.
+  ansible.builtin.debug:
+    msg: "No Db2 for z/OS subsystems were identified based on this z/OS system, based on the informed scope ({{ scope | upper }})."
+  when: zos_db2_discovery_db2_prefixes | length == 0
