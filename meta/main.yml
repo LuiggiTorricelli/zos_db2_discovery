@@ -1,0 +1,13 @@
+galaxy_info:
+  author: Luiggi Torricelli
+  description: This role will perform the discovery of Db2 for z/OS subsystems existent on a sysplex or lpar.
+  license: Apache-2.0
+  min_ansible_version: 2.15
+  galaxy_tags:
+    - db2
+    - zos
+    - mainframe
+    - discovery
+collections:
+  - ibm.ibm_zos_core
+dependencies: []

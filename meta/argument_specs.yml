@@ -1,0 +1,16 @@
+---
+argument_specs:
+  main:
+    short_description: Main set of tasks of the role zos_db2_discovery.
+    author: Luiggi Torricelli
+    options:
+      scope:
+        description: "To identify if Db2 subsystems must be discovered only from the LPAR or from the sysplex"
+        type: "str"
+        required: false
+        default: "SYSPLEX"
+        choices:
+          - "SYSPLEX"
+          - "sysplex"
+          - "LPAR"
+          - "lpar"

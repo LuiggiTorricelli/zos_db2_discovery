@@ -1,0 +1,63 @@
+---
+- name: Make sure variables are empty before starting.
+  ansible.builtin.set_fact:
+    zos_db2_discovery_db2_information: []
+
+- name: Display operator command prefixes.
+  ibm.ibm_zos_core.zos_operator:
+    cmd: "D O"
+    verbose: no
+  changed_when: false
+  register: zos_db2_discovery_out_opdata
+
+- name: Apply filter and get only the Db2-related prefixes.
+  ansible.builtin.set_fact:
+    zos_db2_discovery_db2_prefixes: "{{ __db2s_per_lpar_or_plex }}"
+    zos_db2_discovery_current_system: "{{ __filtered_opdata_out.system }}"
+  vars:
+    __filtered_opdata_out: "{{ zos_db2_discovery_out_opdata.content | parse_opdata }}"
+    __filtered_opdata_out_only_db2s: "{{ __filtered_opdata_out.content.command_prefixes | selectattr('owner', 'search', '\\S+MSTR') | list }}"
+    __filtered_opdata_out_only_db2s_lpar: "{{ __filtered_opdata_out_only_db2s | selectattr('system', 'eq', __filtered_opdata_out.system) | list }}"
+    __db2s_per_lpar_or_plex: "{{ (scope | upper == 'LPAR') | ternary(__filtered_opdata_out_only_db2s_lpar, __filtered_opdata_out_only_db2s) }}"
+
+- name: Block of tasks to be run only when 1 or more Db2 subsystems were found.
+  block:
+    - name: Display Db2 subsystem's DDF.
+      ibm.ibm_zos_core.zos_operator:
+        cmd: "{{ __cmd_prefix }}DIS DDF DETAIL"
+        verbose: no
+      register: zos_db2_discovery_out_ddf
+      loop: "{{ zos_db2_discovery_db2_prefixes }}"
+      loop_control:
+        label: "{{ {'owner': item.owner, 'system': item.system} }}"
+      changed_when: false
+      vars:
+        __cmd_prefix: "{{ (item.system == zos_db2_discovery_current_system) | ternary(item.prefix, 'ROUTE ' + item.system + ',' + item.prefix) }}"
+
+    - name: Display Db2 subsystem's group.
+      ibm.ibm_zos_core.zos_operator:
+        cmd: "{{ __cmd_prefix }}DIS GROUP DETAIL"
+        verbose: no
+      register: zos_db2_discovery_out_group
+      loop: "{{ zos_db2_discovery_db2_prefixes }}"
+      loop_control:
+        label: "{{ {'owner': item.owner, 'system': item.system} }}"
+      changed_when: false
+      vars:
+        __cmd_prefix: "{{ (item.system == zos_db2_discovery_current_system) | ternary(item.prefix, 'ROUTE ' + item.system + ',' + item.prefix) }}"
+
+    - name: Apply filter to parse data from Db2 subsystem's command outputs.
+      ansible.builtin.set_fact:
+        zos_db2_discovery_db2_information: "{{ zos_db2_discovery_db2_information + [ __tmp_dict ] }}"
+      loop: "{{ zos_db2_discovery_db2_prefixes }}"
+      loop_control:
+        label: "{{ {'owner': item.owner, 'system': item.system} }}"
+      vars:
+        __filtered_db2_ddf_out: "{{ (zos_db2_discovery_out_ddf.results | selectattr('item.owner', 'eq', item.owner))[0].content | default([]) | parse_ddf }}"
+        __filtered_db2_group_out: "{{ (zos_db2_discovery_out_group.results | selectattr('item.owner', 'eq', item.owner))[0].content | default([]) | parse_group }}"
+        __tmp_dict: "{{ {'system': item.system, 'prefix': item.prefix, 'owner': item.owner, 'subsystem': item.owner[:4]} | ansible.builtin.combine(__filtered_db2_ddf_out.content, __filtered_db2_group_out.content) }}"
+
+    - debug:
+        var: zos_db2_discovery_db2_information
+
+  when: zos_db2_discovery_db2_prefixes | length > 0

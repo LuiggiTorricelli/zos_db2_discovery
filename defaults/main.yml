@@ -1,0 +1,3 @@
+---
+# Identifies if the Db2s should be discovered by SYSPLEX or LPAR
+scope: SYSPLEX
