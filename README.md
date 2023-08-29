@@ -1,15 +1,15 @@
 zos_db2_discovery
-=========
+=================
 
 The Ansible role 'zos_db2_discovery' will perform a sequence of steps to identify Db2 for z/OS subsystems running on either the specific LPAR or SYSPLEX where Ansible is connecting to.
 
 Requirements
-------------
+============
 
 Python and Z Open Automation Utilities must be installed on the remote z/OS system, since the module ibm.ibm_zos_core.zos_operator is used along the role.
 
 Role Variables
---------------
+==============
 
 Available variables are listed below, along with default values:
 
@@ -19,19 +19,19 @@ Available variables are listed below, along with default values:
 Set the scope of the discovery, if it should identify Db2 for z/OS subsystems available only on the connected LPAR or the sysplex. Available options are: [LPAR, SYSPLEX].
 
 Dependencies
-------------
+============
 
 None.
 
 Example Playbook (with default scope)
-----------------
+=====================================
 
     - hosts: zos_server
       roles:
         - role: zos_db2_discovery
 
 Example Playbook (with scope being specified)
-----------------
+=============================================
 
     - hosts: zos_server
       roles:
@@ -39,7 +39,7 @@ Example Playbook (with scope being specified)
           scope: lpar
 
 Sample Output
-----------------
+=============
 
 When this role is successfully executed, a fact named `zos_db2_discovery_db2_information` will be set. It is a list of dictionaries, with each item being a discovered Db2 for z/OS subsystem and the collected information about it (DDF details, group details, etc.).
 
@@ -126,11 +126,11 @@ When this role is successfully executed, a fact named `zos_db2_discovery_db2_inf
     ]
 
 License
--------
+=======
 
 This role is licensed under licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 Author Information
-------------------
+==================
 
 This role was created in 2023 by Luiggi Torricelli, a Db2 for z/OS system programmer.
