@@ -1,7 +1,7 @@
 zos_db2_discovery
 =================
 
-The Ansible role 'zos_db2_discovery' will perform a sequence of steps to identify Db2 for z/OS subsystems running on either the specific LPAR or SYSPLEX where Ansible is connecting to.
+The Ansible role 'zos_db2_discovery' will perform a sequence of steps to identify Db2 for z/OS subsystems running on either the specific z/OS LPAR or z/OS sysplex where Ansible is connecting to.
 
 Requirements
 ============
