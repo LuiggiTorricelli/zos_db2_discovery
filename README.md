@@ -123,6 +123,7 @@ When this role is successfully executed, a fact named `zos_db2_discovery_db2_inf
                 "subsystem": "DBA1",
                 "system": "TSTA"
             }
+    ]
 
 License
 -------
