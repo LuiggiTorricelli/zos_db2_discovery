@@ -62,7 +62,7 @@ When this role is successfully executed, a fact named `zos_db2_discovery_db2_inf
                     ],
                     "cmtstat": "I",
                     "condbat": 1200,
-                    "generic_lu_name": "AMXTUGLU",
+                    "generic_lu_name": "GENTSTDB",
                     "ip_address": "::123.456.789.123",
                     "ip_name": "-NONE",
                     "location": "TESTDBA0",
