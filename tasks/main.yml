@@ -53,8 +53,8 @@
       loop_control:
         label: "{{ {'owner': item.owner, 'system': item.system} }}"
       vars:
-        __filtered_db2_ddf_out: "{{ (zos_db2_discovery_out_ddf.results | selectattr('item.owner', 'eq', item.owner))[0].content | default([]) | parse_ddf }}"
-        __filtered_db2_group_out: "{{ (zos_db2_discovery_out_group.results | selectattr('item.owner', 'eq', item.owner))[0].content | default([]) | parse_group }}"
+        __filtered_db2_ddf_out: "{{ (zos_db2_discovery_out_ddf.results | selectattr('item.owner', 'eq', item.owner) | list)[0].content | default([]) | parse_ddf }}"
+        __filtered_db2_group_out: "{{ (zos_db2_discovery_out_group.results | selectattr('item.owner', 'eq', item.owner) | list)[0].content | default([]) | parse_group }}"
         __tmp_dict: "{{ {'system': item.system, 'prefix': item.prefix, 'owner': item.owner, 'subsystem': item.owner[:4]} | ansible.builtin.combine(__filtered_db2_ddf_out.content, __filtered_db2_group_out.content) }}"
 
     - name: Display discovered list of Db2 for z/OS subsystems and its information.
